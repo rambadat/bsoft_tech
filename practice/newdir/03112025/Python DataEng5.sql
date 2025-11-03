@@ -1,0 +1,544 @@
+OOPS
+====
+🧩 Object-Oriented Programming (OOP) Basics
+🎯 Learning Objectives
+By the end of today, you’ll be able to:
+-Understand the core OOP concepts (Class, Object, Methods, Attributes)
+-Implement Encapsulation, Inheritance, Polymorphism, and Abstraction
+-Design modular, reusable Python classes for data engineering projects
+-Apply OOP to a real-world ETL use case
+
+Object-Oriented Programming is a paradigm where we model data and behavior as objects.
+OOP helps you group related data (variables) and actions (functions) together inside classes, so they can act as reusable building blocks.
+
+🧩 Basic Terminology
+| Concept        | Description                                  | Example                    |
+| -------------- | -------------------------------------------- | -------------------------- |
+| **Class**      | A blueprint or template for creating objects | `class Employee:`          |
+| **Object**     | An instance of a class                       | `emp1 = Employee()`        |
+| **Attributes** | Variables that belong to a class/object      | `self.name`, `self.salary` |
+| **Methods**    | Functions defined inside a class             | `def get_salary(self):`    |
+
+
+🧩 1. What is a Class and Object?
+A class is a blueprint/template -> for creating objects. [Something which dosent sound like real )(skeleton) but will become real 
+when object connects to class] It defines what properties (attributes) and behaviors (methods) its objects will have.
+
+class Car:
+    def __init__(self, brand, color):
+        self.brand = brand
+        self.color = color
+
+    def start_engine(self):
+        print(f"{self.brand} engine started!")
+		
+In above code, we can see that there is nothing real.
+We still dont know which is the brand and which is the color
+Yes, this is a code but nothing representing real but something like blueprint/template
+Now, we can create [many objects] using the above template.
+Here:
+Car is a class
+It defines attributes: brand, color
+It defines method: start_engine()
+
+An object is a specific instance of a class — created using the class blueprint.
+It has actual values for the attributes defined in the class.
+
+# Creating objects from the Car class
+car1 = Car("Tesla", "Red")
+car2 = Car("BMW", "Blue")
+
+# Accessing attributes and methods
+print(car1.brand)         # Output: Tesla
+print(car2.color)         # Output: Blue
+car1.start_engine()       # Output: Tesla engine started!
+car2.start_engine()       # Output: BMW engine started!
+
+This is something real. This doesnt look like blueprint because here actual(real) values are passed like Tesla 
+with Red color & BMW with Blue color.
+Hence, class and object togther make an basic oops code
+Class   : UnReal(Template)
+Objects : Real(Actual values passed)
+
+
+🔹 Example: Simple Class and Object
+class Employee:
+    # Class attribute
+    company = "Snowflake Inc."
+
+    # Constructor method
+    def __init__(self, name, role, salary):
+        self.name = name
+        self.role = role
+        self.salary = salary
+
+    # Instance method
+    def show_details(self):
+        print(f"👤 Name: {self.name}, Role: {self.role}, Salary: ₹{self.salary}, Company: {Employee.company}")
+
+
+# Creating objects
+emp1 = Employee("Prajeesh", "Data Engineer", 1200000)
+emp2 = Employee("Anjali", "Data Analyst", 900000)
+# Calling methods
+emp1.show_details()
+emp2.show_details()
+
+🧾 Output:
+👤 Name: Prajeesh, Role: Data Engineer, Salary: ₹1200000, Company: Snowflake Inc.
+👤 Name: Anjali, Role: Data Analyst, Salary: ₹900000, Company: Snowflake Inc.
+
+🧠 1. Encapsulation – Binding Data and Behavior
+      -----------------------------------------
+		Encapsulation means restricting direct access to internal data and methods.
+
+		class Account:
+			def __init__(self, owner, balance):
+				self.owner = owner
+				self.__balance = balance  # private variable (double underscore)
+
+			def deposit(self, amount):
+				self.__balance += amount
+				print(f"✅ Deposited ₹{amount}. New balance: ₹{self.__balance}")
+
+			def withdraw(self, amount):
+				if amount > self.__balance:
+					print("❌ Insufficient funds!")
+				else:
+					self.__balance -= amount
+					print(f"💸 Withdrawn ₹{amount}. Remaining balance: ₹{self.__balance}")
+
+			def get_balance(self):
+				return self.__balance
+
+		acc = Account("Prajeesh", 10000)
+		acc.deposit(2000)
+		acc.withdraw(3000)
+		print("Balance (via method):", acc.get_balance())
+
+        Output:
+		✅ Deposited ₹2000. New balance: ₹12000
+		💸 Withdrawn ₹3000. Remaining balance: ₹9000
+		Balance (via method): 9000
+
+🧠 2. Inheritance – Reusing Code Across Classes
+      -----------------------------------------
+	   Inheritance allows one class to inherit attributes and methods from another.
+
+		# Base class
+		class DataSource:
+			def __init__(self, source_name):
+				self.source_name = source_name
+
+			def connect(self):
+				print(f"🔗 Connecting to data source: {self.source_name}")
+
+		# Derived class
+		class AzureBlobSource(DataSource):
+			def __init__(self, source_name, container):
+				super().__init__(source_name)
+				self.container = container
+
+			def list_files(self):
+				print(f"📂 Listing files from container: {self.container}")
+
+		# Object creation
+		azure_source = AzureBlobSource("AzureBlob", "raw-sales-data")
+		azure_source.connect()
+		azure_source.list_files()
+
+		Output:
+		🔗 Connecting to data source: AzureBlob
+		📂 Listing files from container: raw-sales-data	   
+
+🧠 3. Polymorphism – Same Function, Different Behavior
+	  ------------------------------------------------
+		Polymorphism lets different classes use the same method name but behave differently.
+
+		class CSVSource:
+			def read_data(self):
+				print("📄 Reading data from CSV file...")
+
+		class APIDataSource:
+			def read_data(self):
+				print("🌐 Fetching data from API endpoint...")
+
+		# Common interface
+		for source in [CSVSource(), APIDataSource()]:
+			source.read_data()
+
+
+		🧾 Output:
+		📄 Reading data from CSV file...
+		🌐 Fetching data from API endpoint...
+		
+🧠 4. Abstraction – Hiding Implementation Details
+      -------------------------------------------
+		Abstraction focuses on what to do, not how to do it — using abstract base classes.
+
+		from abc import ABC, abstractmethod
+
+		class DataSource(ABC):
+			@abstractmethod
+			def connect(self):
+				pass
+
+			@abstractmethod
+			def read(self):
+				pass
+
+
+		class MySQLSource(DataSource):
+			def connect(self):
+				print("🔗 Connected to MySQL Database")
+
+			def read(self):
+				print("📊 Reading data from MySQL table...")
+
+		mysql = MySQLSource()
+		mysql.connect()
+		mysql.read()		
+
+
+List of keywords used in OOPS
+=============================
+Note : Set WordWrap off to visualize below table neatly
+| **Concept / Feature**                  | **Keyword / Method / Convention**                | **Purpose / Description**                                                     | **Example Usage**                             |
+| -------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- | --------------------------------------------- |
+| **Define a Class**                     | `class`                                          | Used to define a class (blueprint for objects)                                | `class Car:`                                  |
+| **Create an Object (Instance)**        | `ClassName()`                                    | Used to instantiate (create) an object from a class                           | `c1 = Car()`                                  |
+| **Constructor**                        | `__init__()`                                     | Automatically called when an object is created; initializes object attributes | `def __init__(self, name):`                   |
+| **Destructor**                         | `__del__()`                                      | Called automatically when an object is destroyed (for cleanup)                | `def __del__(self):`                          |
+| **Instance Reference**                 | `self`                                           | Refers to the current instance (object) of the class                          | `self.name = name`                            |
+| **Class Reference**                    | `cls`                                            | Refers to the class itself (used inside class methods)                        | `@classmethod` → `def method(cls):`           |
+| **Instance Method**                    | (no decorator)                                   | Method that operates on a single object                                       | `def run(self):`                              |
+| **Class Method**                       | `@classmethod`                                   | Operates on class-level data shared by all objects                            | `@classmethod def count(cls):`                |
+| **Static Method**                      | `@staticmethod`                                  | Independent utility function grouped inside a class                           | `@staticmethod def add(a,b):`                 |
+| **Class Attribute**                    | (defined outside `__init__`)                     | Shared across all instances                                                   | `class Car: wheels = 4`                       |
+| **Instance Attribute**                 | (defined inside `__init__`)                      | Unique to each object                                                         | `self.color = color`                          |
+| **Accessing Attributes / Methods**     | `object_name.attribute` / `object_name.method()` | To use data or functions of a class                                           | `car1.brand`, `car1.start()`                  |
+| **Inheritance**                        | `(ParentClass)`                                  | Allows a class to inherit attributes and methods from another                 | `class ElectricCar(Car):`                     |
+| **Call Parent Constructor**            | `super()`                                        | Calls the parent class’s `__init__()` or other methods                        | `super().__init__(brand, color)`              |
+| **Encapsulation (Private Attributes)** | Prefix `_` or `__`                               | Hides or restricts access to variables                                        | `self.__price = 100000`                       |
+| **Polymorphism**                       | Method Overriding                                | Different classes implement same method differently                           | `def start_engine()` in multiple classes      |
+| **Operator Overloading**               | `__add__`, `__len__`, `__str__`, etc.            | Customize how operators behave for objects                                    | `def __str__(self): return self.name`         |
+| **String Representation**              | `__str__()`                                      | Returns human-readable info about object                                      | `print(obj)` → calls `__str__()`              |
+| **Official Representation**            | `__repr__()`                                     | Returns developer-readable representation                                     | `repr(obj)`                                   |
+| **Equality Check**                     | `__eq__(self, other)`                            | Defines behavior of `==` operator                                             | `def __eq__(self, other):`                    |
+| **Less / Greater Than**                | `__lt__`, `__gt__`, etc.                         | Defines comparison behavior                                                   | `def __lt__(self, other):`                    |
+| **Iteration Support**                  | `__iter__()`, `__next__()`                       | Enables looping over custom objects                                           | `for x in obj:`                               |
+| **Property Decorator**                 | `@property`                                      | Makes a method behave like a read-only attribute                              | `@property def name(self): return self._name` |
+| **Setter Decorator**                   | `@<property>.setter`                             | Allows controlled modification of attributes                                  | `@name.setter def name(self, value):`         |
+| **Delete Object**                      | `del`                                            | Manually deletes an object reference                                          | `del car1`                                    |
+| **Check Instance Type**                | `isinstance()`                                   | Checks if object is instance of a class                                       | `isinstance(car1, Car)`                       |
+| **Check Subclass Type**                | `issubclass()`                                   | Checks if class is subclass of another                                        | `issubclass(ElectricCar, Car)`                |
+
+
+🧩 Real Data Engineering Use Case
+   ==============================
+
+Combine all OOP features to model a data ingestion system.
+
+from abc import ABC, abstractmethod
+
+class DataSource(ABC):
+    @abstractmethod
+    def connect(self): pass
+    @abstractmethod
+    def extract(self): pass
+
+
+class CSVDataSource(DataSource):
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+    def connect(self):
+        print(f"🔗 Validating file path: {self.file_path}")
+
+    def extract(self):
+        print(f"📄 Reading CSV data from {self.file_path}")
+
+
+class APIDataSource(DataSource):
+    def __init__(self, endpoint):
+        self.endpoint = endpoint
+
+    def connect(self):
+        print(f"🌐 Connecting to API endpoint: {self.endpoint}")
+
+    def extract(self):
+        print(f"📊 Fetching data from API: {self.endpoint}")
+
+
+def run_pipeline(source: DataSource):
+    source.connect()
+    source.extract()
+
+
+# Run with multiple data sources
+csv_source = CSVDataSource("sales_data.csv")
+api_source = APIDataSource("https://api.salesdata.com/today")
+
+for s in [csv_source, api_source]:
+    run_pipeline(s)
+
+
+🧾 Output:
+🔗 Validating file path: sales_data.csv
+📄 Reading CSV data from sales_data.csv
+🌐 Connecting to API endpoint: https://api.salesdata.com/today
+📊 Fetching data from API: https://api.salesdata.com/today
+
+| Concept       | Key Idea                             | Example                   |
+| ------------- | ------------------------------------ | ------------------------- |
+| Class/Object  | Blueprint and instance               | `class Employee`          |
+| Encapsulation | Data protection                      | Private vars              |
+| Inheritance   | Code reuse                           | Base → Derived class      |
+| Polymorphism  | Common interface, different behavior | `read_data()` for API/CSV |
+| Abstraction   | Hiding details                       | Using abstract classes    |
+
+
+
+🚀 Project: OOP-based ETL Framework (CSV / API / Azure Blob → Snowflake)
+========================================================================
+This project combines everything you’ve learned up to Day 7:
+✅ Functions
+✅ Error Handling & Logging
+✅ File Handling
+✅ Object-Oriented Programming
+
+🎯 Goal
+Design a configurable and extensible ETL pipeline using OOP principles that can:
+-Connect to multiple data sources (CSV, API, Azure Blob, etc.)
+-Extract data
+-Load it into Snowflake
+-Use logging + error handling
+-Easily extend to new data sources in the future
+
+🧩 Project Structure
+etl_project/
+│
+├── etl_base.py           # Abstract base class
+├── etl_csv.py            # CSV implementation
+├── etl_api.py            # API implementation
+├── etl_blob.py           # Azure Blob implementation
+├── snowflake_loader.py   # Load to Snowflake
+├── logger_setup.py       # Logging config
+└── main.py               # Pipeline Orchestrator
+
+Let’s see all components below 👇
+
+🧠 1. logger_setup.py
+import logging
+
+def setup_logger():
+    logging.basicConfig(
+        filename='etl_pipeline.log',
+        level=logging.INFO,
+        format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
+        handlers=[
+            logging.FileHandler("etl_pipeline.log"),
+            logging.StreamHandler()
+        ]
+    )
+    return logging.getLogger("ETL_PIPELINE")
+
+
+🧠 2. etl_base.py (Abstract Base Class)
+from abc import ABC, abstractmethod
+
+class ETLSource(ABC):
+    @abstractmethod
+    def connect(self):
+        pass
+
+    @abstractmethod
+    def extract(self):
+        pass
+
+    @abstractmethod
+    def load_to_snowflake(self):
+        pass
+
+
+🧠 3. etl_csv.py (CSV Implementation)
+import pandas as pd
+from etl_base import ETLSource
+from snowflake_loader import SnowflakeLoader
+
+class CSVSource(ETLSource):
+    def __init__(self, file_path, logger):
+        self.file_path = file_path
+        self.logger = logger
+        self.df = None
+
+    def connect(self):
+        self.logger.info(f"🔗 Validating CSV path: {self.file_path}")
+
+    def extract(self):
+        try:
+            self.df = pd.read_csv(self.file_path)
+            self.logger.info(f"📄 Extracted {len(self.df)} rows from CSV.")
+        except Exception as e:
+            self.logger.error(f"❌ Error reading CSV: {e}")
+            raise
+
+    def load_to_snowflake(self):
+        if self.df is not None:
+            SnowflakeLoader(self.logger).load_dataframe(self.df, "CSV_TABLE")
+
+
+🧠 4. etl_api.py (API Implementation)
+import requests
+import pandas as pd
+from etl_base import ETLSource
+from snowflake_loader import SnowflakeLoader
+
+class APIDataSource(ETLSource):
+    def __init__(self, endpoint, logger):
+        self.endpoint = endpoint
+        self.logger = logger
+        self.df = None
+
+    def connect(self):
+        self.logger.info(f"🌐 Connecting to API: {self.endpoint}")
+
+    def extract(self):
+        try:
+            response = requests.get(self.endpoint)
+            response.raise_for_status()
+            data = response.json()
+            self.df = pd.DataFrame(data)
+            self.logger.info(f"📊 Extracted {len(self.df)} records from API.")
+        except Exception as e:
+            self.logger.error(f"❌ API extraction failed: {e}")
+            raise
+
+    def load_to_snowflake(self):
+        if self.df is not None:
+            SnowflakeLoader(self.logger).load_dataframe(self.df, "API_TABLE")
+
+🧠 5. etl_blob.py (Azure Blob Implementation)
+from azure.storage.blob import BlobServiceClient
+import pandas as pd
+from etl_base import ETLSource
+from snowflake_loader import SnowflakeLoader
+
+class AzureBlobSource(ETLSource):
+    def __init__(self, connection_string, container_name, blob_name, logger):
+        self.connection_string = connection_string
+        self.container_name = container_name
+        self.blob_name = blob_name
+        self.logger = logger
+        self.df = None
+
+    def connect(self):
+        try:
+            self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
+            self.container_client = self.blob_service_client.get_container_client(self.container_name)
+            self.logger.info(f"🔗 Connected to Azure Blob container: {self.container_name}")
+        except Exception as e:
+            self.logger.error(f"❌ Azure connection failed: {e}")
+            raise
+
+    def extract(self):
+        try:
+            blob_client = self.container_client.get_blob_client(self.blob_name)
+            download = blob_client.download_blob()
+            df = pd.read_csv(download.readall())
+            self.df = df
+            self.logger.info(f"📂 Extracted {len(df)} rows from {self.blob_name}")
+        except Exception as e:
+            self.logger.error(f"❌ Failed to extract blob: {e}")
+            raise
+
+    def load_to_snowflake(self):
+        if self.df is not None:
+            SnowflakeLoader(self.logger).load_dataframe(self.df, "AZURE_BLOB_TABLE")
+
+
+🧠 6. snowflake_loader.py (Load into Snowflake)
+import snowflake.connector
+
+class SnowflakeLoader:
+    def __init__(self, logger):
+        self.logger = logger
+
+    def load_dataframe(self, df, table_name):
+        try:
+            conn = snowflake.connector.connect(
+                user='YOUR_USERNAME',
+                password='YOUR_PASSWORD',
+                account='YOUR_ACCOUNT',
+                warehouse='COMPUTE_WH',
+                database='MY_DB',
+                schema='PUBLIC'
+            )
+            cur = conn.cursor()
+            self.logger.info(f"⬆️ Loading {len(df)} rows into Snowflake table: {table_name}")
+
+            for _, row in df.iterrows():
+                values = tuple(row)
+                placeholders = ','.join(['%s'] * len(row))
+                cur.execute(f"INSERT INTO {table_name} VALUES ({placeholders})", values)
+
+            conn.commit()
+            cur.close()
+            conn.close()
+            self.logger.info("✅ Load completed successfully.")
+        except Exception as e:
+            self.logger.error(f"❌ Snowflake load failed: {e}")
+            raise
+
+
+🧠 7. main.py (Pipeline Orchestrator)
+from logger_setup import setup_logger
+from etl_csv import CSVSource
+from etl_api import APIDataSource
+from etl_blob import AzureBlobSource
+
+def run_pipeline(source_obj):
+    source_obj.connect()
+    source_obj.extract()
+    source_obj.load_to_snowflake()
+
+if __name__ == "__main__":
+    logger = setup_logger()
+    logger.info("🚀 ETL Pipeline Started")
+
+    try:
+        # Example sources
+        csv_source = CSVSource("data/sales.csv", logger)
+        api_source = APIDataSource("https://api.publicapis.org/entries", logger)
+        blob_source = AzureBlobSource(
+            connection_string="YOUR_AZURE_CONNECTION_STRING",
+            container_name="raw-data",
+            blob_name="daily_sales.csv",
+            logger=logger
+        )
+
+        # Run multiple data sources
+        for src in [csv_source, api_source, blob_source]:
+            run_pipeline(src)
+
+        logger.info("🏁 ETL Pipeline Completed Successfully")
+    except Exception as e:
+        logger.critical(f"🔥 Pipeline Failed: {e}")
+
+
+✅ End-to-End Flow
+-Each data source (CSV, API, Azure Blob)
+  → Inherits from base class ETLSource.
+-Each implements connect(), extract(), and load_to_snowflake().
+-Logging and error handling are centralized.
+-You can add new sources (e.g., PostgreSQL, Kafka) by just subclassing ETLSource.
+
+🧠 Key Concepts You Practiced
+| Concept         | Implementation                                                    |
+| --------------- | ----------------------------------------------------------------- |
+| OOP Inheritance | `ETLSource` → CSV, API, Blob                                      |
+| Abstraction     | Abstract base class                                               |
+| Polymorphism    | Common interface: `connect()`, `extract()`, `load_to_snowflake()` |
+| Logging         | Centralized with timestamp + level                                |
+| Error Handling  | Try/except in every source                                        |
+| Extensibility   | Add any new source easily                                         |
