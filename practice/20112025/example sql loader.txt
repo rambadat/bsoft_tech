@@ -1,0 +1,108 @@
+✅ Data File: employees.csv
+
+EmpName,EmpAge,EmpCity
+Ram,35,Chennai
+John,40,Bangalore
+Sara,30,Pune
+
+
+✅ Step 1: Create Tables
+
+
+-- Table for header row
+CREATE TABLE header_table (
+    col1 VARCHAR2(50),
+    col2 VARCHAR2(50),
+    col3 VARCHAR2(50)
+);
+
+-- Table for actual data rows
+CREATE TABLE employee_table (
+    emp_name VARCHAR2(50),
+    emp_age NUMBER,
+    emp_city VARCHAR2(50)
+);
+
+
+Step 2: Control File for Header (header.ctl)
+
+
+OPTIONS (SKIP=0, LOAD=1)
+LOAD DATA
+INFILE 'employees.csv'
+INTO TABLE header_table
+APPEND
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+TRAILING NULLCOLS
+(
+    col1,
+    col2,
+    col3
+)
+
+Explanation:
+
+SKIP=0 → Start from first row.
+LOAD=1 → Load only one row (the header).
+Maps header columns to header_table.
+
+
+sqlldr userid=username/password control=header.ctl log=header.log
+
+
+✅ Step 3: Control File for Data (data.ctl)
+
+
+OPTIONS (SKIP=1)
+LOAD DATA
+INFILE 'employees.csv'
+INTO TABLE employee_table
+APPEND
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+TRAILING NULLCOLS
+(
+    emp_name,
+    emp_age,
+    emp_city
+)
+
+Explanation:
+
+SKIP=1 → Skip header row.
+Load remaining rows into employee_table.
+
+
+sqlldr userid=username/password control=data.ctl log=data.log
+
+################################################################
+
+✅ Alternative: Single Control File Using WHEN
+If you want one control file to handle both header and data in one run:
+
+
+
+LOAD DATA
+INFILE 'employees.csv'
+APPEND
+
+INTO TABLE header_table
+WHEN (1:1) = 'E'   -- Assuming header starts with 'E' (EmpName)
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+TRAILING NULLCOLS
+(
+    col1,
+    col2,
+    col3
+)
+
+INTO TABLE employee_table
+WHEN (1:1) != 'E'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+TRAILING NULLCOLS
+(
+    emp_name,
+    emp_age,
+    emp_city
+)
+
+################################################################
