@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# CSV file to check
+csv_file="data.csv"
+
+# Define required headers
+required_headers=("column1" "column2" "column3" "column6")
+
+# Read the 4th line (header row) of the CSV into an array
+IFS=',' read -r -a csv_headers < <(sed -n '4p' "$csv_file")
+
+echo "CSV headers found: ${csv_headers[*]}"
+echo "Required headers: ${required_headers[*]}"
+
+# Function to check if a value exists in an array
+in_array() {
+    local needle=$1; shift
+    local haystack=("$@")
+    for item in "${haystack[@]}"; do
+        if [[ "$item" == "$needle" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Verify required headers
+missing=()
+for req in "${required_headers[@]}"; do
+    if ! in_array "$req" "${csv_headers[@]}"; then
+        missing+=("$req")
+    fi
+done
+
+if [[ ${#missing[@]} -eq 0 ]]; then
+    echo "✅ Comparison successful: All required headers exist in the CSV."
+else
+    echo "❌ Comparison failed: Missing headers -> ${missing[*]}"
+fi
