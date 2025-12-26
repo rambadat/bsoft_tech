@@ -1,0 +1,31 @@
+#!/usr/bin/ksh93
+
+# Define two arrays with 10 elements each
+typeset -a arr1=(a b c d e f g h i j)
+typeset -a arr2=(a b c d x y g h i j)
+
+# Define the ranges of columns to check
+typeset -a ranges=( "1-4" "7-10" )
+
+# Function to check equality for a given range
+check_range() {
+    typeset start=$1
+    typeset end=$2
+    typeset ok=1
+
+    for ((i=start-1; i<end; i++)); do
+        if [[ "${arr1[i]}" != "${arr2[i]}" ]]; then
+            print "Mismatch at column $((i+1)): ${arr1[i]} vs ${arr2[i]}"
+            ok=0
+        fi
+    done
+
+    (( ok )) && print "Columns $start-$end match"
+}
+
+# Loop through ranges
+for r in "${ranges[@]}"; do
+    start=${r%-*}
+    end=${r#*-}
+    check_range $start $end
+done
